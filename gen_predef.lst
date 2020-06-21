@@ -1,0 +1,57 @@
+
+// ==========================================================================
+//  GPPG error listing for yacc source file <gen_predef.y - 20.06.2020 21:07:42>
+// ==========================================================================
+//  Version:  1.5.2
+//  Machine:  DESKTOP-CA52FU6
+//  DateTime: 20.06.2020 21:07:49
+//  UserName: rotten
+// ==========================================================================
+
+
+%namespace GardensPoint
+%start program
+%partial
+
+%YYSTYPE Node
+
+%token Print Exit Assign Plus Minus Multiplies Divides OpenPar ClosePar Endl Eof Error OpenBracket CloseBracket Program Ident Type RealNumber IntNumber Semicolon
+
+%%
+// Error: There are 1 non-terminating NonTerminal Symbols
+   //  {Identifier}
+// Warning: Terminating Identifier fixes the following size-1 NonTerminal set
+   // {Identifier}
+// Error: NonTerminal symbol "Identifier" has no productions
+// --------------------------------------------------------------------------
+
+program
+		: Program OpenBracket bracketstmt CloseBracket
+		;
+
+bracketstmt
+		: /*empty*/
+		| bracketstmt stmt Semicolon
+		;
+
+stmt 
+		: Divides
+			{
+				PrintHelp();
+			}
+		| Plus
+			{
+				Reset();
+			}
+		| Type Identifier
+			{
+				Declare($2, $1);
+			}
+		;
+
+%%
+
+int lineno=1;
+
+public Parser(Scanner scanner) : base(scanner) { }// ==========================================================================
+

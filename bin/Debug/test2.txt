@@ -1,0 +1,4 @@
+program
+{
+	if (false) write 5;
+}

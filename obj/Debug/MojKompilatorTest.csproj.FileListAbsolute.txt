@@ -1,0 +1,8 @@
+C:\Users\rotten\source\repos\MojKompilatorTest\MojKompilatorTest\bin\Debug\MojKompilatorTest.exe.config
+C:\Users\rotten\source\repos\MojKompilatorTest\MojKompilatorTest\bin\Debug\MojKompilatorTest.exe
+C:\Users\rotten\source\repos\MojKompilatorTest\MojKompilatorTest\bin\Debug\MojKompilatorTest.pdb
+C:\Users\rotten\source\repos\MojKompilatorTest\MojKompilatorTest\bin\Debug\QUT.ShiftReduceParser.dll
+C:\Users\rotten\source\repos\MojKompilatorTest\MojKompilatorTest\obj\Debug\MojKompilatorTest.csproj.CoreCompileInputs.cache
+C:\Users\rotten\source\repos\MojKompilatorTest\MojKompilatorTest\obj\Debug\MojKompilatorTest.csproj.CopyComplete
+C:\Users\rotten\source\repos\MojKompilatorTest\MojKompilatorTest\obj\Debug\MojKompilatorTest.exe
+C:\Users\rotten\source\repos\MojKompilatorTest\MojKompilatorTest\obj\Debug\MojKompilatorTest.pdb

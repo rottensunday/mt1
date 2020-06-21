@@ -1,0 +1,48 @@
+program
+	{
+	int i;
+	int z;
+	double d;
+	bool t;
+	bool f;
+	i = 5;
+	d = 123.456;
+	t = true;
+	f = false;
+	z = 34;
+	write i;
+	write "\n";
+	write d;
+	write "\n";
+	write t;
+	write "\n";
+	write f;
+	write "\n";
+		{
+		i = 7;
+		write i;
+		write "\n";
+			{
+			i = 15;
+			write i+z;
+			write "\n";
+			}
+		}
+	i = 9;
+	write i;
+	write "\n";
+	if (true) 
+	{
+		write i;
+		write "\n";
+		write i+5;
+		write "\n";
+	}
+	
+	while (false)
+	{
+		i = i + 1;
+	}
+	write i+5;
+	write "\n";
+	}
