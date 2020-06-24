@@ -23,6 +23,9 @@ String		\".*\"
 {Bool}		  { yylval = new BoolNode(yytext); return (int)Tokens.Bool; }
 {Ident}       { yylval = new IdentifierNode(yytext); return (int)Tokens.Ident; }
 {String}	  { yylval = new StringNode(yytext); return (int)Tokens.String; }
+"!"			  { return (int)Tokens.LogicalNEG; }
+"||"		  { return (int)Tokens.LogicalOR; }
+"&&"		  { return (int)Tokens.LogicalAND; }
 ";"			  { return (int)Tokens.Semicolon; }
 "="           { return (int)Tokens.Assign; }
 "+"           { return (int)Tokens.Plus; }

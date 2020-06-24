@@ -4,7 +4,7 @@
 
 %YYSTYPE Node
 
-%token Print Exit Assign Plus Minus Multiplies Divides OpenPar ClosePar Endl Eof Error OpenBracket CloseBracket Program Ident Type RealNumber IntNumber Semicolon Write String Bool If While
+%token Print Exit Assign Plus Minus Multiplies Divides OpenPar ClosePar Endl Eof Error OpenBracket CloseBracket Program Ident Type RealNumber IntNumber Semicolon Write String Bool If While LogicalOR LogicalAND LogicalNEG
 
 %%
 

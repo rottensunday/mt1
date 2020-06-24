@@ -4,9 +4,9 @@
 
 // GPPG version 1.5.2
 // Machine:  DESKTOP-CA52FU6
-// DateTime: 21.06.2020 04:06:46
+// DateTime: 24.06.2020 20:44:39
 // UserName: rotten
-// Input file <gen_predef.y - 21.06.2020 04:06:40>
+// Input file <gen_predef.y - 24.06.2020 20:44:38>
 
 // options: conflicts no-lines diagnose & report gplex conflicts
 
@@ -23,7 +23,8 @@ public enum Tokens {error=2,EOF=3,Print=4,Exit=5,Assign=6,
     Plus=7,Minus=8,Multiplies=9,Divides=10,OpenPar=11,ClosePar=12,
     Endl=13,Eof=14,Error=15,OpenBracket=16,CloseBracket=17,Program=18,
     Ident=19,Type=20,RealNumber=21,IntNumber=22,Semicolon=23,Write=24,
-    String=25,Bool=26,If=27,While=28};
+    String=25,Bool=26,If=27,While=28,LogicalOR=29,LogicalAND=30,
+    LogicalNEG=31};
 
 // Abstract base class for GPLEX scanners
 [GeneratedCodeAttribute( "Gardens Point Parser Generator", "1.5.2")]

@@ -418,6 +418,46 @@ namespace GardensPoint
         }
     }
 
+    public class BinaryLogicalOperationNode : Node
+    {
+        public override Type Type { get; set; }
+        public Node Left { get; set; }
+        public Node Right { get; set; }
+        public Tokens Operation { get; set; }
+
+        public override void GenCode()
+        {
+            string labEnd = Utility.NewTemp();
+            Left.GenCode();
+            Compiler.EmitCode("dup");
+            if (Operation == Tokens.LogicalOR)
+            {
+                Compiler.EmitCode($"brtrue {labEnd}");
+            }
+            else if (Operation == Tokens.LogicalAND)
+            {
+                Compiler.EmitCode($"brfalse {labEnd}");
+            }
+            Right.GenCode();
+            if (Operation == Tokens.LogicalOR)
+            {
+                Compiler.EmitCode("or");
+            }
+            else if (Operation == Tokens.LogicalAND)
+            {
+                Compiler.EmitCode("and");
+            }
+            Compiler.EmitCode($"{labEnd}:");
+        }
+
+        public BinaryLogicalOperationNode(Node left, Node right, Tokens operation)
+        {
+            Left = left;
+            Right = right;
+            Operation = operation;
+        }
+    }
+
     public class IntNumberNode : Node
     {
         public override Type Type { get; set; } = Type.Int;
