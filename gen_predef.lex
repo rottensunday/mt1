@@ -26,6 +26,15 @@ String		\".*\"
 "!"			  { return (int)Tokens.LogicalNEG; }
 "||"		  { return (int)Tokens.LogicalOR; }
 "&&"		  { return (int)Tokens.LogicalAND; }
+"~"			  { return (int)Tokens.BitNEG; }
+"|"			  { return (int)Tokens.BitOR; }
+"&"			  { return (int)Tokens.BitAND; }
+"=="		  { return (int)Tokens.RelationEQUALS; }
+"!="		  { return (int)Tokens.RelationNOTEQUALS; }
+">"			  { return (int)Tokens.RelationGREATER; }
+">="		  { return (int)Tokens.RelationGREATEREQUALS; }
+"<"			  { return (int)Tokens.RelationLESS; }
+"<="		  { return (int)Tokens.RelationLESSEQUALS; }
 ";"			  { return (int)Tokens.Semicolon; }
 "="           { return (int)Tokens.Assign; }
 "+"           { return (int)Tokens.Plus; }

@@ -187,9 +187,8 @@ namespace GardensPoint
         public void Declare(Node identifier, Node type)
         {
             IdentifierNode identifierCasted = (IdentifierNode) identifier;
-            TypeNode typeCasted = (TypeNode) type;
             if (Compiler.MainTree.Variables.ContainsKey(identifierCasted.id)) YYError();
-            Compiler.MainTree.Variables[identifierCasted.id] = Utility.CastType(typeCasted.val);
+            Compiler.MainTree.Variables[identifierCasted.id] = type.Type;
         }
 
         public void MakeAssignNode(Node identifierNode, Node expressionNode)
@@ -458,6 +457,129 @@ namespace GardensPoint
         }
     }
 
+    public class BinaryRelationOperationNode : Node
+    {
+        public override Type Type { get; set; }
+        public Node Left { get; set; }
+        public Node Right { get; set; }
+        public Tokens Operation { get; set; }
+
+        public override void GenCode()
+        {
+            switch (Operation)
+            {
+                case Tokens.RelationEQUALS:
+                    Left.GenCode();
+                    Right.GenCode();
+                    Compiler.EmitCode("ceq");
+                    break;
+                case Tokens.RelationNOTEQUALS:
+                    Left.GenCode();
+                    Right.GenCode();
+                    Compiler.EmitCode("ceq");
+                    Compiler.EmitCode("not");
+                    break;
+                case Tokens.RelationGREATER:
+                    Left.GenCode();
+                    Right.GenCode();
+                    Compiler.EmitCode("cgt");
+                    break;
+                case Tokens.RelationLESS:
+                    Left.GenCode();
+                    Right.GenCode();
+                    Compiler.EmitCode("clt");
+                    break;
+                default:
+                    throw new Exception("bad binary relation");
+            }
+        }
+
+        public BinaryRelationOperationNode(Node left, Node right, Tokens operation)
+        {
+            Left = left;
+            Right = right;
+            Operation = operation;
+        }
+    }
+
+    public class BinaryBitOperationNode : Node
+    {
+        public override Type Type { get; set; }
+        public Node Left { get; set; }
+        public Node Right { get; set; }
+        public Tokens Operation { get; set; }
+
+        public override void GenCode()
+        {
+            Left.GenCode();
+            Right.GenCode();
+            if (Operation == Tokens.BitOR)
+            {
+                Compiler.EmitCode("or");
+            }
+            else if (Operation == Tokens.BitAND)
+            {
+                Compiler.EmitCode("and");
+            }
+        }
+
+        public BinaryBitOperationNode(Node left, Node right, Tokens operation)
+        {
+            Left = left;
+            Right = right;
+            Operation = operation;
+        }
+    }
+
+    public class UnaryOperationNode : Node
+    {
+        public override Type Type { get; set; }
+        public Node Node { get; set; }
+        public Tokens Operation { get; set; }
+
+        public override void GenCode()
+        {
+            Node.GenCode();
+            switch (Operation)
+            {
+                case Tokens.Minus:
+                    Node.GenCode();
+                    Compiler.EmitCode("neg");
+                    break;
+                case Tokens.BitNEG:
+                    break;
+                case Tokens.LogicalNEG:
+                    break;
+                default:
+                    throw new Exception("bad unary op");
+            }
+        }
+
+        public UnaryOperationNode(Node node, Tokens operation)
+        {
+            Node = node;
+            Operation = operation;
+        }
+    }
+
+    public class UnaryCastOperationNode : Node
+    {
+        public override Type Type { get; set; }
+        public Node CastType { get; set; }
+        public Node Expr { get; set; }
+
+        public override void GenCode()
+        {
+
+        }
+
+        public UnaryCastOperationNode(Node type, Node expr)
+        {
+            CastType = type;
+            Expr = expr;
+        }
+    }
+
     public class IntNumberNode : Node
     {
         public override Type Type { get; set; } = Type.Int;
@@ -513,10 +635,12 @@ namespace GardensPoint
         public override Type Type { get; set; }
         public override void GenCode()
         {
-            
+            throw new NotImplementedException();
         }
-        public string val;
-        public TypeNode(string v) { val = v; }
+        public TypeNode(string v)
+        {
+            Type = Utility.CastType(v);
+        }
     }
 
     public class StringNode : Node

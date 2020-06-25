@@ -11,20 +11,13 @@
 .locals init ( int32 x )
 
 // main
-ldc.i4 0
-brfalse L0
-ldc.i4 5
-call void [mscorlib]System.Console::Write(int32)
-L0:
-ldc.i4 5
-ldc.i4 5
-mul
-ldc.i4 3
+ldc.i4 10
+ldc.i4 10
 add
-ldc.i4 4
-ldc.i4 4
-div
+ldc.i4 10
+ldc.i4 10
 add
+neg
 stloc x
 ldloc x
 call void [mscorlib]System.Console::Write(int32)
