@@ -1,24 +1,72 @@
 %namespace GardensPoint
-%start program
+%start start
 %partial
 
 %YYSTYPE Node
 
-%token Print Exit Assign Plus Minus Multiplies Divides OpenPar ClosePar Endl Eof Error OpenBracket CloseBracket Program Ident Type RealNumber IntNumber Semicolon Write String Bool
+%token Print Exit Assign Plus Minus Multiplies Divides OpenPar ClosePar Endl Error OpenBracket CloseBracket Program Ident Type RealNumber IntNumber Semicolon String Bool
 %token RelationEQUALS RelationNOTEQUALS RelationGREATER RelationGREATEREQUALS RelationLESS RelationLESSEQUALS
 %token BitOR BitAND BitNEG
 %token LogicalOR LogicalAND LogicalNEG
-%token If While
+%token If Else While
+%token Eof Eol
+%token Read Write
 
 %%
 
+start
+		: program
+		;
+
 program
-		: Program OpenBracket bracketstmt CloseBracket
+		: Program OpenBracket bracketstmt 
+			{
+			
+			}
+		  CloseBracket
+			{
+				YYAccept();
+			}
+		| Program OpenBracket error 
+			{
+				Compiler.AddError("Syntax error - probably missing closing bracket", Compiler.LineNumber);
+				yyerrok();
+			}
+		| Program error
+			{
+				Compiler.AddError("Syntax error - probably missing opening bracket", Compiler.LineNumber);
+				yyerrok();
+			}
+		| OpenBracket
+			{
+				Compiler.AddError("Syntax error - probably missing Program keyword", Compiler.LineNumber);
+				yyerrok();
+			}
+		   bracketstmt CloseBracket
+		| error 
+			{
+				Compiler.AddError("Unknown syntax error or error escape", Compiler.LineNumber);
+				YYAbort();
+			}
+		| error Eof 
+			{
+				Compiler.AddError("Unknown syntax error or error escape", Compiler.LineNumber);
+				YYAbort();
+			}
 		;
 
 bracketstmt
 		: /*empty*/
 		| bracketstmt stmt
+		| bracketstmt expr_logical Semicolon
+			{
+				MakeExpressionNode($2);
+			}
+		| bracketstmt expr_logical error
+			{
+				Compiler.AddError("Syntax error - missing semicolon in expression", Compiler.LineNumber);
+				yyerrok();
+			}
 		;
 
 stmt 
@@ -26,17 +74,34 @@ stmt
 			{
 				MakeAssignNode($1, $3);
 			}
+
 		| Type Ident Semicolon
 			{
 				Declare($2, $1);
 			}
+		| Type Ident
+			{
+				Compiler.AddError("Syntax error - probably missing semicolon", Compiler.LineNumber);
+				yyerrok();
+			}
 		| If OpenPar expr_logical ClosePar 
 			{
-				MakeIfStmtNode($3);
+				StartIf($3);
 			}
 		  stmt
 			{
-				PopBracketStatement();
+				EndIf();
+			}
+		  ifcont
+		| If OpenPar error
+			{
+				Compiler.AddError("Syntax error - probably missing closing parenthesis", Compiler.LineNumber);
+				yyerrok();
+			}
+		| If error
+			{
+				Compiler.AddError("Syntax error - probably missing opening parenthesis", Compiler.LineNumber);
+				yyerrok();
 			}
 		| While OpenPar expr_logical ClosePar
 			{
@@ -46,13 +111,42 @@ stmt
 			{
 				PopBracketStatement();
 			}
+		| While OpenPar error
+			{
+				Compiler.AddError("Syntax error - probably missing closing parenthesis", Compiler.LineNumber);
+				yyerrok();
+			}
+		| While error
+			{
+				Compiler.AddError("Syntax error - probably missing opening parenthesis", Compiler.LineNumber);
+				yyerrok();
+			}
 		| Write String Semicolon
 			{
 				MakeWriteStringNode($2);
 			}
+		| Write String error
+			{
+				Compiler.AddError("Syntax error - probably missing semicolon", Compiler.LineNumber);
+				yyerrok();
+			}
 		| Write expr_logical Semicolon
 			{
 				MakeWriteExpressionNode($2);
+			}
+		| Write expr_logical error
+			{
+				Compiler.AddError("Syntax error - probably missing semicolon", Compiler.LineNumber);
+				yyerrok();
+			}
+		| Read Ident Semicolon
+			{
+				MakeReadNode($2);
+			}
+		| Read Ident error
+			{
+				Compiler.AddError("Syntax error - probably missing semicolon", Compiler.LineNumber);
+				yyerrok();
 			}
 		| OpenBracket 
 			{
@@ -65,6 +159,31 @@ stmt
 		  CloseBracket
 			{
 				PopBracketStatement();
+			}
+		| error
+			{
+				Compiler.AddError("Syntax error - unknown error", Compiler.LineNumber);
+				yyerrok();
+			}
+		| error Eof
+			{
+				Compiler.AddError("Syntax error - unexpected end of file", Compiler.LineNumber);
+				YYAbort();
+			}
+		;
+
+ifcont
+		: 
+			{
+				EndIfNoElse();
+			}
+		| Else
+			{
+				StartElse();
+			}
+		  stmt
+			{
+				EndElse();
 			}
 		;
 
@@ -198,7 +317,5 @@ factor
 		;
 
 %%
-
-int lineno=1;
 
 public Parser(Scanner scanner) : base(scanner) { }

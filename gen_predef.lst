@@ -1,158 +1,71 @@
 
 // ==========================================================================
-//  GPPG error listing for yacc source file <gen_predef.y - 24.06.2020 20:54:35>
+//  GPLEX error listing for lex source file <gen_predef.lex>
 // ==========================================================================
-//  Version:  1.5.2
+//  Version:  1.2.2
 //  Machine:  DESKTOP-CA52FU6
-//  DateTime: 24.06.2020 20:55:13
+//  DateTime: 28.06.2020 02:25:24
 //  UserName: rotten
 // ==========================================================================
 
 
+%using QUT.Gppg;
 %namespace GardensPoint
-%start program
-%partial
 
-%YYSTYPE Node
-
-%token Print Exit Assign Plus Minus Multiplies Divides OpenPar ClosePar Endl Eof Error OpenBracket CloseBracket Program Ident Type RealNumber IntNumber Semicolon Write String Bool If While LogicalOR LogicalAND LogicalNEG
-
-%%
-// Error: There are 1 non-terminating NonTerminal Symbols
-   //  {expr}
-// Warning: Terminating expr fixes the following size-1 NonTerminal set
-   // {expr}
-// Error: NonTerminal symbol "expr" has no productions
-// --------------------------------------------------------------------
-
-program
-		: Program OpenBracket bracketstmt CloseBracket
-		;
-
-bracketstmt
-		: /*empty*/
-		| bracketstmt stmt
-		;
-
-stmt 
-		: Ident Assign expr_logical Semicolon
-			{
-				MakeAssignNode($1, $3);
-			}
-		| Type Ident Semicolon
-			{
-				Declare($2, $1);
-			}
-		| If OpenPar expr_logical ClosePar 
-			{
-				MakeIfStmtNode($3);
-			}
-		  stmt
-			{
-				PopBracketStatement();
-			}
-		| While OpenPar expr_logical ClosePar
-			{
-				MakeWhileStmtNode($3);
-			}
-		  stmt
-			{
-				PopBracketStatement();
-			}
-		| Write String Semicolon
-			{
-				MakeWriteStringNode($2);
-			}
-		| Write expr_logical Semicolon
-			{
-				MakeWriteExpressionNode($2);
-			}
-		| OpenBracket 
-			{
-				PushBracketStatement();
-			}
-		  bracketstmt
-			{
-			
-			}
-		  CloseBracket
-			{
-				PopBracketStatement();
-			}
-		;
-
-expr_logical
-		: expr_relation
-		;
-
-expr_relation
-		: expr_additive
-		;
-
-expr_additive
-		: expr_additive Plus expr_multiplicative
-			{
-				$$ = new BinaryOperationNode($1, $3, Tokens.Plus);
-			}
-		| expr_additive Minus expr_multiplicative
-			{
-				$$ = new BinaryOperationNode($1, $3, Tokens.Minus);
-			}
-		| expr_multiplicative
-			{
-				$$ = $1;
-			}
-		;
-
-expr_multiplicative
-		: expr_multiplicative Multiplies expr_bit
-			{
-				$$ = new BinaryOperationNode($1, $3, Tokens.Multiplies);
-			}
-		| expr_multiplicative Divides expr_bit
-			{
-				$$ = new BinaryOperationNode($1, $3, Tokens.Divides);
-			}
-		| expr_bit
-			{
-				$$ = $1;
-			}
-		;
-
-expr_bit
-		: expr_unary
-		;
-
-expr_unary
-		: factor
-		;
-
-factor
-		: OpenPar expr ClosePar
-			{
-				$$ = $2;
-			}
-		| IntNumber
-			{
-				$$ = $1;
-			}
-		| RealNumber
-			{
-				$$ = $1;
-			}
-		| Bool
-			{
-				$$ = $1;
-			}
-		| Ident
-			{
-				$$ = $1;
-			}
-		;
-
+IntNumber   0|[1-9][0-9]*
+RealNumber  (0|[1-9][0-9]*)\.(0|[1-9][0-9]*)
+BadNumber	(0[0-9][0-9]*)|((0[0-9][0-9]*)\.(0[0-9][0-9]*))|((0[0-9][0-9]*)\.([0-9]*))|(([0-9]*)\.(0[0-9][0-9]*))
+Bool		"true"|"false"
+Ident       [a-zA-z][a-zA-Z0-9]*
+Type		"int"|"double"|"bool"
+String		\"(([^\n\r\"\])|(\\\")|(\\a)|(\\b)|(\\f)|(\\t)|(\\v)|(\\0)|(\\\\)|(\\n)|(\\r))*([^\\])\"
+// Error: Expected character <')'> 
+// --------------------------------
+BadString	\".*\"
+Comment		"//".*"\r"$
 %%
 
-int lineno=1;
-
-public Parser(Scanner scanner) : base(scanner) { }// ==========================================================================
+"print"       { Compiler.LineNumber = tokLin; return (int)Tokens.Print; }
+"exit"        { Compiler.LineNumber = tokLin; return (int)Tokens.Exit; }
+"program"	  { Compiler.LineNumber = tokLin; return (int)Tokens.Program; }
+"write"		  { Compiler.LineNumber = tokLin; return (int)Tokens.Write; }
+"read"		  { Compiler.LineNumber = tokLin; return (int)Tokens.Read; }
+"if"		  { Compiler.LineNumber = tokLin; return (int)Tokens.If; }
+"else"		  { Compiler.LineNumber = tokLin; return (int)Tokens.Else; }
+"while"		  { Compiler.LineNumber = tokLin; return (int)Tokens.While; }
+{Type}		  { Compiler.LineNumber = tokLin; yylval = new TypeNode(yytext); return (int)Tokens.Type; }
+{IntNumber}   { Compiler.LineNumber = tokLin; yylval = new IntNumberNode(yytext); return (int)Tokens.IntNumber; }
+{RealNumber}  { Compiler.LineNumber = tokLin; yylval = new RealNumberNode(yytext); return (int)Tokens.RealNumber; }
+{Bool}		  { Compiler.LineNumber = tokLin; yylval = new BoolNode(yytext); return (int)Tokens.Bool; }
+{Ident}       { Compiler.LineNumber = tokLin; yylval = new IdentifierNode(yytext); return (int)Tokens.Ident; }
+{String}	  { Compiler.LineNumber = tokLin; yylval = new StringNode(yytext); return (int)Tokens.String; }
+{BadString}	  { Compiler.AddError("Lexical error - bad string format", tokLin); }
+{BadNumber}   { Compiler.AddError("Lexical error - bad number format", tokLin); }
+"!"			  { Compiler.LineNumber = tokLin; return (int)Tokens.LogicalNEG; }
+"||"		  { Compiler.LineNumber = tokLin; return (int)Tokens.LogicalOR; }
+"&&"		  { Compiler.LineNumber = tokLin; return (int)Tokens.LogicalAND; }
+"~"			  { Compiler.LineNumber = tokLin; return (int)Tokens.BitNEG; }
+"|"			  { Compiler.LineNumber = tokLin; return (int)Tokens.BitOR; }
+"&"			  { Compiler.LineNumber = tokLin; return (int)Tokens.BitAND; }
+"=="		  { Compiler.LineNumber = tokLin; return (int)Tokens.RelationEQUALS; }
+"!="		  { Compiler.LineNumber = tokLin; return (int)Tokens.RelationNOTEQUALS; }
+">"			  { Compiler.LineNumber = tokLin; return (int)Tokens.RelationGREATER; }
+">="		  { Compiler.LineNumber = tokLin; return (int)Tokens.RelationGREATEREQUALS; }
+"<"			  { Compiler.LineNumber = tokLin; return (int)Tokens.RelationLESS; }
+"<="		  { Compiler.LineNumber = tokLin; return (int)Tokens.RelationLESSEQUALS; }
+";"			  { Compiler.LineNumber = tokLin; return (int)Tokens.Semicolon; }
+"="           { Compiler.LineNumber = tokLin; return (int)Tokens.Assign; }
+"+"           { Compiler.LineNumber = tokLin; return (int)Tokens.Plus; }
+"-"           { Compiler.LineNumber = tokLin; return (int)Tokens.Minus; }
+"*"           { Compiler.LineNumber = tokLin; return (int)Tokens.Multiplies; }
+"/"           { Compiler.LineNumber = tokLin; return (int)Tokens.Divides; }
+"("           { Compiler.LineNumber = tokLin; return (int)Tokens.OpenPar; }
+")"           { Compiler.LineNumber = tokLin; return (int)Tokens.ClosePar; }
+"{"			  { Compiler.LineNumber = tokLin; return (int)Tokens.OpenBracket; }
+"}"			  { Compiler.LineNumber = tokLin; return (int)Tokens.CloseBracket; }
+"\r"          { Compiler.LineNumber = tokLin; }
+<<EOF>>       { Compiler.LineNumber = tokLin; return (int)Tokens.Eof; }
+" "           { Compiler.LineNumber = tokLin; }
+"\t"          { Compiler.LineNumber = tokLin; }
+{Comment}	  { Compiler.LineNumber = tokLin; }// ==========================================================================
 

@@ -1,3 +1,21 @@
-// Parser Conflict Information for grammar file "gen_predef.y - 25.06.2020 02:19:44"
+// Parser Conflict Information for grammar file "gen_predef.y - 27.06.2020 21:38:28"
+
+Shift/Reduce conflict on symbol "error", parser will shift
+ Reduce 11:	bracketstmt -> /* empty */
+ Shift "error":	State-5 -> State-110
+  Items for From-state State 5
+    4 program: Program OpenBracket . bracketstmt Anon@1 CloseBracket 
+    5 program: Program OpenBracket . error 
+  Items for Next-state State 110
+    5 program: Program OpenBracket error .
+	-lookahead: EOF
+
+Shift/Reduce conflict on symbol "Else", parser will shift
+ Reduce 38:	ifcont -> /* empty */
+ Shift "Else":	State-76 -> State-78
+  Items for From-state State 76
+    20 stmt: If OpenPar expr_logical ClosePar Anon@3 stmt Anon@4 . ifcont 
+  Items for Next-state State 78
+    40 ifcont: Else . Anon@8 stmt 
 
 // End conflict information for parser

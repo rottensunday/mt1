@@ -1,6 +1,14 @@
 program
-{
-	int x;
-	x = - (10+10);
-	write x;
-}
+	{
+	int a;
+	double b;
+	bool c;
+	read a;
+	write (a+5);
+	read b;
+	write "\n";
+	write (b+12.3);
+	write "\n";
+	read c;
+	write c;
+	}
